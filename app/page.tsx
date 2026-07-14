@@ -21,8 +21,16 @@ export default function Home() {
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | undefined>()
   const [refreshKey, setRefreshKey] = useState(0)
   
-  // Filter states
-  const [dateRange, setDateRange] = useState({ from: '', to: '' })
+  // Filter states - default to last 7 days
+  const [dateRange, setDateRange] = useState(() => {
+    const to = new Date()
+    const from = new Date()
+    from.setDate(from.getDate() - 7)
+    return {
+      from: from.toISOString().split('T')[0],
+      to: to.toISOString().split('T')[0]
+    }
+  })
 
   const handleMapClick = (lat: number, lng: number) => {
     setSelectedLocation({ lat, lng })
