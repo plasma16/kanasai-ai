@@ -27,7 +27,44 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ data })
+    // Transform the data to include proper coordinates
+    const transformedData = data?.map(theft => {
+      // Parse the PostGIS hex string to get coordinates
+      // The hex string is in EWKB format, we need to extract longitude and latitude
+      let coordinates = [0, 0]
+      
+      if (theft.location && typeof theft.location === 'string') {
+        // If it's a hex string from PostGIS
+        if (theft.location.startsWith('0101000020E6100000')) {
+          // This is a Point geometry in EWKB format
+          // Extract the coordinates from the hex string
+          const hex = theft.location.replace('0101000020E6100000', '')
+          if (hex.length >= 32) {
+            const lonHex = hex.substring(0, 16)
+            const latHex = hex.substring(16, 32)
+            
+            // Convert hex to float64
+            const lonBuffer = Buffer.from(lonHex, 'hex')
+            const latBuffer = Buffer.from(latHex, 'hex')
+            
+            const lon = lonBuffer.readDoubleLE(0)
+            const lat = latBuffer.readDoubleLE(0)
+            
+            coordinates = [lon, lat]
+          }
+        }
+      }
+
+      return {
+        ...theft,
+        location: {
+          type: 'Point',
+          coordinates: coordinates
+        }
+      }
+    }) || []
+
+    return NextResponse.json({ data: transformedData })
   } catch (err) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
