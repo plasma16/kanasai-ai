@@ -37,6 +37,17 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
     description: '',
     occurred_at: new Date().toISOString().split('T')[0]
   })
+  
+  // Update form data when initialLocation changes (when user clicks map)
+  useEffect(() => {
+    if (initialLocation) {
+      setFormData(prev => ({
+        ...prev,
+        latitude: initialLocation.lat,
+        longitude: initialLocation.lng
+      }))
+    }
+  }, [initialLocation])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
