@@ -4,13 +4,14 @@ import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import SubmissionForm from '@/components/SubmissionForm'
 import Header from '@/components/Header'
+import FilterPanel from '@/components/FilterPanel'
 
 // Dynamically import Leaflet components to avoid SSR issues
 const HeatMap = dynamic(() => import('@/components/HeatMap'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
-      <p className="text-gray-500">Loading map...</p>
+    <div className="flex items-center justify-center h-64 bg-blue-900 rounded-lg">
+      <p className="text-blue-200">Loading map...</p>
     </div>
   )
 })
@@ -19,6 +20,11 @@ export default function Home() {
   const [showForm, setShowForm] = useState(false)
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | undefined>()
   const [refreshKey, setRefreshKey] = useState(0)
+  
+  // Filter states
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [dateRange, setDateRange] = useState({ from: '', to: '' })
+  const [showFilters, setShowFilters] = useState(false)
 
   const handleMapClick = (lat: number, lng: number) => {
     setSelectedLocation({ lat, lng })
@@ -31,26 +37,42 @@ export default function Home() {
     setRefreshKey(prev => prev + 1)
   }
 
+  const handleResetFilters = () => {
+    setSelectedCategory('all')
+    setDateRange({ from: '', to: '' })
+  }
+
   return (
     <div className="min-h-screen bg-blue-950">
       <Header onAddClick={() => setShowForm(true)} />
       
       <main className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Mobile-first: Stack vertically, side-by-side on large screens */}
+        {/* Mobile filter toggle */}
+        <div className="lg:hidden mb-4">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full bg-blue-900 text-blue-200 py-2 px-4 rounded-lg border border-blue-800"
+          >
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </button>
+        </div>
+
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Map Section - Full width on mobile, 2/3 on desktop */}
-          <div className="w-full lg:w-2/3">
-            <div className="bg-blue-900 rounded-lg shadow-lg overflow-hidden border border-blue-800">
-              <HeatMap 
-                key={refreshKey} 
-                onMapClick={handleMapClick}
-                selectedLocation={selectedLocation}
+          {/* Sidebar - Filters + Form */}
+          <div className={`w-full lg:w-1/3 ${(showFilters || !showForm) ? 'block' : 'hidden lg:block'}`}>
+            {/* Filters Panel */}
+            <div className="bg-blue-900 rounded-lg shadow-lg p-4 border border-blue-800 mb-4">
+              <h2 className="text-lg font-semibold text-white mb-3">Filters</h2>
+              <FilterPanel
+                selectedCategory={selectedCategory}
+                dateRange={dateRange}
+                onCategoryChange={setSelectedCategory}
+                onDateRangeChange={setDateRange}
+                onReset={handleResetFilters}
               />
             </div>
-          </div>
 
-          {/* Sidebar - Full width on mobile, 1/3 on desktop */}
-          <div className="w-full lg:w-1/3">
+            {/* Submission Form */}
             {showForm ? (
               <div className="bg-blue-900 rounded-lg shadow-lg p-4 border border-blue-800">
                 <div className="flex justify-between items-center mb-4">
@@ -95,6 +117,18 @@ export default function Home() {
                 </button>
               </div>
             )}
+          </div>
+
+          {/* Map Section */}
+          <div className="w-full lg:w-2/3">
+            <div className="bg-blue-900 rounded-lg shadow-lg overflow-hidden border border-blue-800">
+              <HeatMap 
+                key={refreshKey} 
+                onMapClick={handleMapClick}
+                selectedLocation={selectedLocation}
+                filters={{ category: selectedCategory, dateFrom: dateRange.from, dateTo: dateRange.to }}
+              />
+            </div>
           </div>
         </div>
       </main>

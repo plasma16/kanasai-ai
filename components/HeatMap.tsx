@@ -15,6 +15,11 @@ const SINGAPORE_ZOOM = 12
 interface HeatMapProps {
   onMapClick?: (lat: number, lng: number) => void
   selectedLocation?: { lat: number; lng: number }
+  filters?: {
+    category: string
+    dateFrom: string
+    dateTo: string
+  }
 }
 
 // Custom pin icon for selected location
@@ -64,23 +69,42 @@ function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lng: numbe
   return null
 }
 
-export default function HeatMap({ onMapClick, selectedLocation }: HeatMapProps) {
+export default function HeatMap({ onMapClick, selectedLocation, filters }: HeatMapProps) {
   const [thefts, setThefts] = useState<PettyTheft[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchThefts = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('petty_thefts')
-      .select('*')
-      .order('created_at', { ascending: false })
-    
-    if (error) {
+    setLoading(true)
+    try {
+      // Build query string from filters
+      const params = new URLSearchParams()
+      if (filters?.category && filters.category !== 'all') {
+        params.append('category', filters.category)
+      }
+      if (filters?.dateFrom) {
+        params.append('dateFrom', filters.dateFrom)
+      }
+      if (filters?.dateTo) {
+        params.append('dateTo', filters.dateTo)
+      }
+
+      const queryString = params.toString()
+      const url = `/api/thefts${queryString ? '?' + queryString : ''}`
+      
+      const response = await fetch(url)
+      const result = await response.json()
+      
+      if (result.error) {
+        console.error('Error fetching thefts:', result.error)
+      } else {
+        setThefts(result.data || [])
+      }
+    } catch (error) {
       console.error('Error fetching thefts:', error)
-    } else {
-      setThefts(data || [])
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
-  }, [])
+  }, [filters])
 
   useEffect(() => {
     fetchThefts()
