@@ -32,7 +32,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-blue-950">
       <Header onAddClick={() => setShowForm(true)} />
       
       <main className="container mx-auto px-4 py-6 max-w-7xl">
@@ -40,7 +40,7 @@ export default function Home() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Map Section - Full width on mobile, 2/3 on desktop */}
           <div className="w-full lg:w-2/3">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="bg-blue-900 rounded-lg shadow-lg overflow-hidden border border-blue-800">
               <HeatMap 
                 key={refreshKey} 
                 onMapClick={handleMapClick}
@@ -52,15 +52,15 @@ export default function Home() {
           {/* Sidebar - Full width on mobile, 1/3 on desktop */}
           <div className="w-full lg:w-1/3">
             {showForm ? (
-              <div className="bg-white rounded-lg shadow-md p-4">
+              <div className="bg-blue-900 rounded-lg shadow-lg p-4 border border-blue-800">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">Report Theft</h2>
+                  <h2 className="text-xl font-semibold text-white">Report Theft</h2>
                   <button 
                     onClick={() => {
                       setShowForm(false)
                       setSelectedLocation(undefined)
                     }}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-blue-300 hover:text-white"
                   >
                     ✕
                   </button>
@@ -71,25 +71,25 @@ export default function Home() {
                 />
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow-md p-4">
-                <h2 className="text-xl font-semibold mb-4">How to Use</h2>
-                <ol className="space-y-3 text-gray-700">
+              <div className="bg-blue-900 rounded-lg shadow-lg p-4 border border-blue-800">
+                <h2 className="text-xl font-semibold text-white mb-4">How to Use</h2>
+                <ol className="space-y-3 text-blue-200">
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">1</span>
+                    <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">1</span>
                     <span>Click the map to pin a theft location</span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">2</span>
+                    <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">2</span>
                     <span>Fill in what was stolen</span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">3</span>
+                    <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">3</span>
                     <span>Submit to add to the heat map</span>
                   </li>
                 </ol>
                 <button
                   onClick={() => setShowForm(true)}
-                  className="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  className="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-500 transition-colors shadow-lg"
                 >
                   + Report a Theft
                 </button>

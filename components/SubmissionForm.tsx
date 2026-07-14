@@ -63,8 +63,8 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Location Status */}
-      <div className={`p-3 rounded-md ${hasLocation ? 'bg-green-50' : 'bg-yellow-50'}`}>
-        <p className={`text-sm ${hasLocation ? 'text-green-800' : 'text-yellow-800'}`}>
+      <div className={`p-3 rounded-md ${hasLocation ? 'bg-blue-800' : 'bg-yellow-900'}`}>
+        <p className={`text-sm ${hasLocation ? 'text-blue-200' : 'text-yellow-200'}`}>
           {hasLocation ? (
             <>📍 Location set: {formData.latitude.toFixed(4)}, {formData.longitude.toFixed(4)}</>
           ) : (
@@ -74,7 +74,7 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-blue-200 mb-1">
           What was stolen? *
         </label>
         <input
@@ -83,12 +83,12 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
           value={formData.item_stolen}
           onChange={(e) => setFormData({ ...formData, item_stolen: e.target.value })}
           placeholder="e.g., iPhone 15, Wallet, Laptop"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-blue-800 border border-blue-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-blue-400"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-blue-200 mb-1">
           Description (optional)
         </label>
         <textarea
@@ -96,12 +96,12 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           placeholder="Brief description of the incident..."
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-blue-800 border border-blue-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-blue-400"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-blue-200 mb-1">
           Date occurred *
         </label>
         <input
@@ -109,20 +109,20 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
           required
           value={formData.occurred_at}
           onChange={(e) => setFormData({ ...formData, occurred_at: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-blue-800 border border-blue-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       {error && (
-        <div className="bg-red-50 p-3 rounded-md">
-          <p className="text-sm text-red-800">{error}</p>
+        <div className="bg-red-900 p-3 rounded-md">
+          <p className="text-sm text-red-200">{error}</p>
         </div>
       )}
 
       <button
         type="submit"
         disabled={submitting || !hasLocation}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-500 disabled:bg-blue-800 disabled:cursor-not-allowed transition-colors"
       >
         {submitting ? 'Submitting...' : !hasLocation ? 'Select Location First' : 'Submit Report'}
       </button>
