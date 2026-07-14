@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Validate submission
-    const validation = validateSubmission(body)
+    // Validate submission (now async because it checks IP geolocation)
+    const validation = await validateSubmission(body, request)
     if (!validation.valid) {
       return NextResponse.json(
         { error: validation.error },
