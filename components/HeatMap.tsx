@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { MapContainer, TileLayer, useMap, CircleMarker, Marker } from 'react-leaflet'
+import { MapContainer, TileLayer, useMap, CircleMarker, Marker, Popup } from 'react-leaflet'
 import { HeatMapLayer } from './HeatMapLayer'
 import 'leaflet/dist/leaflet.css'
 import { supabase } from '@/lib/supabase'
@@ -14,12 +14,13 @@ const SINGAPORE_ZOOM = 12
 
 interface HeatMapProps {
   onMapClick?: (lat: number, lng: number) => void
+  onMarkerClick?: (theft: PettyTheft) => void // New prop for marker clicks
   selectedLocation?: { lat: number; lng: number }
   filters?: {
     dateFrom: string
     dateTo: string
   }
-  hideExistingThefts?: boolean // New prop to disable data fetching
+  hideExistingThefts?: boolean
 }
 
 // Custom pin icon for selected location
@@ -69,7 +70,7 @@ function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lng: numbe
   return null
 }
 
-export default function HeatMap({ onMapClick, selectedLocation, filters, hideExistingThefts = false }: HeatMapProps) {
+export default function HeatMap({ onMapClick, onMarkerClick, selectedLocation, filters, hideExistingThefts = false }: HeatMapProps) {
   const [thefts, setThefts] = useState<PettyTheft[]>([])
   const [loading, setLoading] = useState(!hideExistingThefts) // Don't show loading if hiding thefts
 
@@ -149,7 +150,26 @@ export default function HeatMap({ onMapClick, selectedLocation, filters, hideExi
             color: '#dc2626',
             weight: 1
           }}
-        />
+          eventHandlers={{
+            click: () => {
+              if (onMarkerClick) {
+                onMarkerClick(theft)
+              }
+            }
+          }}
+        >
+          <Popup>
+            <div className="text-sm">
+              <p className="font-semibold">{theft.item_stolen}</p>
+              {theft.description && (
+                <p className="text-gray-600 mt-1">{theft.description}</p>
+              )}
+              <p className="text-xs text-gray-500 mt-1">
+                {theft.occurred_at ? new Date(theft.occurred_at).toLocaleDateString() : 'Unknown date'}
+              </p>
+            </div>
+          </Popup>
+        </CircleMarker>
       ))}
       
       {/* Selected location pin */}

@@ -2,9 +2,10 @@
 
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import SubmissionForm from '@/components/SubmissionForm'
 import Header from '@/components/Header'
+import SubmissionForm from '@/components/SubmissionForm'
 import FilterPanel from '@/components/FilterPanel'
+import { PettyTheft } from '@/types/theft'
 
 // Dynamically import HeatMap to avoid SSR issues with Leaflet (window is not defined)
 const HeatMap = dynamic(() => import('@/components/HeatMap'), {
@@ -19,6 +20,7 @@ const HeatMap = dynamic(() => import('@/components/HeatMap'), {
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'report' | 'view'>('report')
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | undefined>()
+  const [selectedTheft, setSelectedTheft] = useState<PettyTheft | null>(null) // New state for theft details
   const [refreshKey, setRefreshKey] = useState(0)
   
   // Filter states - default to last 7 days
@@ -34,7 +36,12 @@ export default function Home() {
 
   const handleMapClick = (lat: number, lng: number) => {
     setSelectedLocation({ lat, lng })
-    setActiveTab('report')
+    setSelectedTheft(null) // Clear theft details when selecting new location
+  }
+
+  const handleMarkerClick = (theft: PettyTheft) => {
+    setSelectedTheft(theft)
+    setSelectedLocation(undefined) // Clear location selection when viewing theft
   }
 
   const handleSubmissionSuccess = () => {
@@ -136,11 +143,38 @@ export default function Home() {
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden border border-white/20 hover:bg-white/15 transition-all duration-300">
                   <HeatMap 
                     key={refreshKey}
-                    onMapClick={handleMapClick}
+                    onMarkerClick={handleMarkerClick}
                     selectedLocation={selectedLocation}
                     filters={{ dateFrom: dateRange.from, dateTo: dateRange.to }}
                   />
                 </div>
+                
+                {/* Theft Details Panel */}
+                {selectedTheft && (
+                  <div className="mt-4 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20">
+                    <h3 className="text-xl font-bold text-white mb-4">Theft Details</h3>
+                    <div className="space-y-2 text-blue-200">
+                      <p><span className="font-semibold text-white">Item:</span> {selectedTheft.item_stolen}</p>
+                      {selectedTheft.description && (
+                        <p><span className="font-semibold text-white">Description:</span> {selectedTheft.description}</p>
+                      )}
+                      {selectedTheft.occurred_at && (
+                        <p><span className="font-semibold text-white">Date:</span> {new Date(selectedTheft.occurred_at).toLocaleDateString()}</p>
+                      )}
+                      {selectedTheft.occurred_time && (
+                        <p><span className="font-semibold text-white">Time:</span> {selectedTheft.occurred_time}</p>
+                      )}
+                      <p><span className="font-semibold text-white">Location:</span> {selectedTheft.location.coordinates[1].toFixed(4)}, {selectedTheft.location.coordinates[0].toFixed(4)}</p>
+                      <p><span className="font-semibold text-white">Reported:</span> {new Date(selectedTheft.created_at).toLocaleString()}</p>
+                    </div>
+                    <button
+                      onClick={() => setSelectedTheft(null)}
+                      className="mt-4 px-4 py-2 bg-blue-800 text-blue-200 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Close Details
+                    </button>
+                  </div>
+                )}
               </div>
             </>
           )}
