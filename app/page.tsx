@@ -42,7 +42,14 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-950">
+    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-950 relative">
+      {/* Animated background blobs for glassmorphism depth */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+      
       <Header />
       
       <main className="container mx-auto px-4 py-6 max-w-7xl">
@@ -50,20 +57,20 @@ export default function Home() {
         <div className="flex gap-2 mb-6">
           <button
             onClick={() => setActiveTab('report')}
-            className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors ${
+            className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
               activeTab === 'report'
-                ? 'bg-blue-600 text-white'
-                : 'bg-blue-900 text-blue-200 hover:bg-blue-800'
+                ? 'bg-white/20 backdrop-blur-md text-white shadow-lg shadow-blue-500/25 border border-white/30'
+                : 'bg-white/5 backdrop-blur-sm text-blue-200 hover:bg-white/10 border border-white/10'
             }`}
           >
             📝 Report Theft
           </button>
           <button
             onClick={() => setActiveTab('view')}
-            className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors ${
+            className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
               activeTab === 'view'
-                ? 'bg-blue-600 text-white'
-                : 'bg-blue-900 text-blue-200 hover:bg-blue-800'
+                ? 'bg-white/20 backdrop-blur-md text-white shadow-lg shadow-blue-500/25 border border-white/30'
+                : 'bg-white/5 backdrop-blur-sm text-blue-200 hover:bg-white/10 border border-white/10'
             }`}
           >
             🗺️ View Heat Map
@@ -76,10 +83,10 @@ export default function Home() {
             <>
               {/* Left: Submission Form */}
               <div className="w-full lg:w-1/2">
-                <div className="bg-blue-900 rounded-lg shadow-lg p-6 border border-blue-800">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
                   <h2 className="text-2xl font-bold text-white mb-6">Report a Theft</h2>
-                  <div className="mb-6 p-4 bg-blue-800 rounded-lg">
-                    <p className="text-blue-200">
+                  <div className="mb-6 p-4 bg-blue-500/20 backdrop-blur-sm rounded-xl border border-blue-400/30">
+                    <p className="text-blue-100">
                       💡 <strong>Tip:</strong> Click on the map to select the theft location, then fill out the form.
                     </p>
                   </div>
@@ -92,8 +99,8 @@ export default function Home() {
 
               {/* Right: Map for location selection */}
               <div className="w-full lg:w-1/2">
-                <div className="bg-blue-900 rounded-lg shadow-lg overflow-hidden border border-blue-800">
-                  <div className="p-4 bg-blue-800 border-b border-blue-700">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden border border-white/20 hover:bg-white/15 transition-all duration-300">
+                  <div className="p-4 bg-white/5 backdrop-blur-sm border-b border-white/20">
                     <h3 className="text-lg font-semibold text-white">📍 Select Location</h3>
                     <p className="text-sm text-blue-200 mt-1">Click on the map to pin the theft location</p>
                   </div>
@@ -101,7 +108,7 @@ export default function Home() {
                     key={refreshKey}
                     onMapClick={handleMapClick}
                     selectedLocation={selectedLocation}
-                    hideExistingThefts={true} // Don't fetch data, just pick location
+                    hideExistingThefts={true}
                   />
                 </div>
               </div>
@@ -113,7 +120,7 @@ export default function Home() {
             <>
               {/* Left: Filters */}
               <div className="w-full lg:w-1/3">
-                <div className="bg-blue-900 rounded-lg shadow-lg p-4 border border-blue-800">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
                   <h2 className="text-lg font-semibold text-white mb-3">Filters</h2>
                   <FilterPanel
                     selectedCategory={selectedCategory}
@@ -127,7 +134,7 @@ export default function Home() {
 
               {/* Right: Heat Map */}
               <div className="w-full lg:w-2/3">
-                <div className="bg-blue-900 rounded-lg shadow-lg overflow-hidden border border-blue-800">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden border border-white/20 hover:bg-white/15 transition-all duration-300">
                   <HeatMap 
                     key={refreshKey}
                     onMapClick={handleMapClick}
