@@ -15,7 +15,7 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
     longitude: initialLocation?.lng || 0,
     item_stolen: '',
     description: '',
-    occurred_at: ''
+    occurred_at: new Date().toISOString().split('T')[0] // Default to today
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -102,10 +102,11 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Date occurred (optional)
+          Date occurred *
         </label>
         <input
           type="date"
+          required
           value={formData.occurred_at}
           onChange={(e) => setFormData({ ...formData, occurred_at: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
