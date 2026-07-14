@@ -2,7 +2,27 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { TheftSubmission, CATEGORY_LABELS, TheftCategory } from '@/types/theft'
+import { TheftSubmission } from '@/types/theft'
+
+// Common stolen items for quick selection
+const COMMON_STOLEN_ITEMS = [
+  'CashCard',
+  'iPhone',
+  'Samsung Phone',
+  'Wallet',
+  'Laptop',
+  'iPad/Tablet',
+  'Backpack/Bag',
+  'Bicycle',
+  'Watch',
+  'Earphones/AirPods',
+  'Sunglasses',
+  'Keys',
+  'Umbrella',
+  'Groceries',
+  'Package/Delivery',
+  'Other'
+]
 
 interface SubmissionFormProps {
   onSuccess: () => void
@@ -80,11 +100,18 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
         <input
           type="text"
           required
+          list="common-items"
           value={formData.item_stolen}
           onChange={(e) => setFormData({ ...formData, item_stolen: e.target.value })}
           placeholder="e.g., iPhone 15, Wallet, Laptop"
           className="w-full px-3 py-2 bg-blue-800 border border-blue-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-blue-400"
         />
+        <datalist id="common-items">
+          {COMMON_STOLEN_ITEMS.map((item) => (
+            <option key={item} value={item} />
+          ))}
+        </datalist>
+        <p className="text-xs text-blue-400 mt-1">💡 Select from common items or type your own</p>
       </div>
 
       <div>
