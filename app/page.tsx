@@ -75,28 +75,12 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Report Tab: Form + Map side by side */}
+        <div className="flex flex-col gap-6">
+          {/* Report Tab: Map on top, Form below */}
           {activeTab === 'report' && (
             <>
-              {/* Left: Submission Form */}
-              <div className="w-full lg:w-1/2">
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
-                  <h2 className="text-2xl font-bold text-white mb-6">Report a Theft</h2>
-                  <div className="mb-6 p-4 bg-blue-500/20 backdrop-blur-sm rounded-xl border border-blue-400/30">
-                    <p className="text-blue-100">
-                      💡 <strong>Tip:</strong> Click on the map to select the theft location, then fill out the form.
-                    </p>
-                  </div>
-                  <SubmissionForm 
-                    onSuccess={handleSubmissionSuccess}
-                    initialLocation={selectedLocation}
-                  />
-                </div>
-              </div>
-
-              {/* Right: Map for location selection */}
-              <div className="w-full lg:w-1/2">
+              {/* Top: Map for location selection */}
+              <div className="w-full">
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden border border-white/20 hover:bg-white/15 transition-all duration-300">
                   <div className="p-4 bg-white/5 backdrop-blur-sm border-b border-white/20">
                     <h3 className="text-lg font-semibold text-white">📍 Select Location</h3>
@@ -107,6 +91,22 @@ export default function Home() {
                     onMapClick={handleMapClick}
                     selectedLocation={selectedLocation}
                     hideExistingThefts={true}
+                  />
+                </div>
+              </div>
+
+              {/* Bottom: Submission Form */}
+              <div className="w-full">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                  <h2 className="text-2xl font-bold text-white mb-6">Report a Theft</h2>
+                  <div className="mb-6 p-4 bg-blue-500/20 backdrop-blur-sm rounded-xl border border-blue-400/30">
+                    <p className="text-blue-100">
+                      💡 <strong>Tip:</strong> Click on the map above to select the theft location, then fill out the form below.
+                    </p>
+                  </div>
+                  <SubmissionForm 
+                    onSuccess={handleSubmissionSuccess}
+                    initialLocation={selectedLocation}
                   />
                 </div>
               </div>
