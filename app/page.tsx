@@ -101,7 +101,7 @@ export default function Home() {
                     key={refreshKey}
                     onMapClick={handleMapClick}
                     selectedLocation={selectedLocation}
-                    filters={{ category: 'all', dateFrom: '', dateTo: '' }}
+                    hideExistingThefts={true} // Don't fetch data, just pick location
                   />
                 </div>
               </div>

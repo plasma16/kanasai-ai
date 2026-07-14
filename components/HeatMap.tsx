@@ -20,6 +20,7 @@ interface HeatMapProps {
     dateFrom: string
     dateTo: string
   }
+  hideExistingThefts?: boolean // New prop to disable data fetching
 }
 
 // Custom pin icon for selected location
@@ -69,11 +70,13 @@ function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lng: numbe
   return null
 }
 
-export default function HeatMap({ onMapClick, selectedLocation, filters }: HeatMapProps) {
+export default function HeatMap({ onMapClick, selectedLocation, filters, hideExistingThefts = false }: HeatMapProps) {
   const [thefts, setThefts] = useState<PettyTheft[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!hideExistingThefts) // Don't show loading if hiding thefts
 
   const fetchThefts = useCallback(async () => {
+    if (hideExistingThefts) return // Skip fetching if we're just picking location
+    
     setLoading(true)
     try {
       // Build query string from filters
@@ -104,7 +107,7 @@ export default function HeatMap({ onMapClick, selectedLocation, filters }: HeatM
     } finally {
       setLoading(false)
     }
-  }, [filters])
+  }, [filters, hideExistingThefts])
 
   useEffect(() => {
     fetchThefts()
