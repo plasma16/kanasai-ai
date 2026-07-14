@@ -107,11 +107,6 @@ export default function Home() {
               <div className="w-full">
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
                   <h2 className="text-2xl font-bold text-white mb-6">Report a Theft</h2>
-                  <div className="mb-6 p-4 bg-blue-500/20 backdrop-blur-sm rounded-xl border border-blue-400/30">
-                    <p className="text-blue-100">
-                      💡 <strong>Tip:</strong> Click on the map above to select the theft location, then fill out the form below.
-                    </p>
-                  </div>
                   <SubmissionForm 
                     onSuccess={handleSubmissionSuccess}
                     initialLocation={selectedLocation}
