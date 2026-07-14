@@ -5,7 +5,16 @@ import { useState } from 'react'
 import SubmissionForm from '@/components/SubmissionForm'
 import Header from '@/components/Header'
 import FilterPanel from '@/components/FilterPanel'
-import HeatMap from '@/components/HeatMap'
+
+// Dynamically import HeatMap to avoid SSR issues with Leaflet (window is not defined)
+const HeatMap = dynamic(() => import('@/components/HeatMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-64 md:h-96 flex items-center justify-center bg-blue-900 rounded-lg">
+      <p className="text-blue-200">Loading map...</p>
+    </div>
+  )
+})
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'report' | 'view'>('report')
