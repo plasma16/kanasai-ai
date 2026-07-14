@@ -102,7 +102,8 @@ export async function POST(request: NextRequest) {
         location: `POINT(${longitude} ${latitude})`,
         item_stolen,
         description: description || null,
-        occurred_at: occurred_at || null
+        occurred_at: occurred_at || null,
+        occurred_time: body.occurred_time || null
       })
       .select()
       .single()

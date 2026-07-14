@@ -16,4 +16,5 @@ export interface TheftSubmission {
   item_stolen: string
   description?: string
   occurred_at?: string
+  occurred_time?: string  // Optional time field
 }

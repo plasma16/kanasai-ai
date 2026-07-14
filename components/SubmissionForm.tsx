@@ -35,7 +35,8 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
     longitude: initialLocation?.lng || 0,
     item_stolen: '',
     description: '',
-    occurred_at: new Date().toISOString().split('T')[0]
+    occurred_at: new Date().toISOString().split('T')[0],
+    occurred_time: ''
   })
   
   // Update form data when initialLocation changes (when user clicks map)
@@ -149,6 +150,19 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
           onChange={(e) => setFormData({ ...formData, occurred_at: e.target.value })}
           className="w-full px-3 py-2 bg-blue-800 border border-blue-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-blue-200 mb-1">
+          Time occurred (optional)
+        </label>
+        <input
+          type="time"
+          value={formData.occurred_time}
+          onChange={(e) => setFormData({ ...formData, occurred_time: e.target.value })}
+          className="w-full px-3 py-2 bg-blue-800 border border-blue-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <p className="text-xs text-blue-400 mt-1">💡 Approximate time helps with heat map accuracy</p>
       </div>
 
       {error && (
