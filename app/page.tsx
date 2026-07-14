@@ -22,7 +22,6 @@ export default function Home() {
   const [refreshKey, setRefreshKey] = useState(0)
   
   // Filter states
-  const [selectedCategory, setSelectedCategory] = useState('all')
   const [dateRange, setDateRange] = useState({ from: '', to: '' })
 
   const handleMapClick = (lat: number, lng: number) => {
@@ -37,7 +36,6 @@ export default function Home() {
   }
 
   const handleResetFilters = () => {
-    setSelectedCategory('all')
     setDateRange({ from: '', to: '' })
   }
 
@@ -123,9 +121,7 @@ export default function Home() {
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
                   <h2 className="text-lg font-semibold text-white mb-3">Filters</h2>
                   <FilterPanel
-                    selectedCategory={selectedCategory}
                     dateRange={dateRange}
-                    onCategoryChange={setSelectedCategory}
                     onDateRangeChange={setDateRange}
                     onReset={handleResetFilters}
                   />
@@ -139,7 +135,7 @@ export default function Home() {
                     key={refreshKey}
                     onMapClick={handleMapClick}
                     selectedLocation={selectedLocation}
-                    filters={{ category: selectedCategory, dateFrom: dateRange.from, dateTo: dateRange.to }}
+                    filters={{ dateFrom: dateRange.from, dateTo: dateRange.to }}
                   />
                 </div>
               </div>

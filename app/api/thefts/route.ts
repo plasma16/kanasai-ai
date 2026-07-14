@@ -5,7 +5,6 @@ import { validateSubmission, checkRateLimit } from '@/lib/security'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const category = searchParams.get('category')
     const dateFrom = searchParams.get('dateFrom')
     const dateTo = searchParams.get('dateTo')
 
@@ -15,9 +14,6 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     // Apply filters
-    if (category && category !== 'all') {
-      query = query.eq('category', category)
-    }
     if (dateFrom) {
       query = query.gte('occurred_at', dateFrom)
     }
@@ -60,44 +56,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { latitude, longitude, item_stolen, category, description, occurred_at } = body
+    const { latitude, longitude, item_stolen, description, occurred_at } = body
 
-    // Insert into Supabase (handle missing category column gracefully)
-    const insertData: any = {
-      location: `POINT(${longitude} ${latitude})`,
-      item_stolen,
-      description: description || null,
-      occurred_at: occurred_at || null
-    }
-    
-    // Only add category if provided (for backward compatibility)
-    if (category) {
-      insertData.category = category
-    }
-
+    // Insert into Supabase
     const { data, error } = await supabase
       .from('petty_thefts')
-      .insert(insertData)
+      .insert({
+        location: `POINT(${longitude} ${latitude})`,
+        item_stolen,
+        description: description || null,
+        occurred_at: occurred_at || null
+      })
       .select()
       .single()
-
-    if (error) {
-      // If error is about missing column, try without category
-      if (error.message.includes('column') && error.message.includes('category')) {
-        delete insertData.category
-        const { data: retryData, error: retryError } = await supabase
-          .from('petty_thefts')
-          .insert(insertData)
-          .select()
-          .single()
-        
-        if (retryError) {
-          return NextResponse.json({ error: retryError.message }, { status: 500 })
-        }
-        return NextResponse.json({ data: retryData }, { status: 201 })
-      }
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
 
     return NextResponse.json({ data }, { status: 201 })
   } catch (err) {

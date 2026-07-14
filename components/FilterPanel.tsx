@@ -1,20 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { CATEGORY_LABELS, TheftCategory } from '@/types/theft'
 
 interface FilterPanelProps {
-  selectedCategory: string
   dateRange: { from: string; to: string }
-  onCategoryChange: (category: string) => void
   onDateRangeChange: (range: { from: string; to: string }) => void
   onReset: () => void
 }
 
 export default function FilterPanel({
-  selectedCategory,
   dateRange,
-  onCategoryChange,
   onDateRangeChange,
   onReset
 }: FilterPanelProps) {
@@ -44,36 +39,6 @@ export default function FilterPanel({
 
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="text-sm font-semibold text-blue-200 mb-2">Filter by Category</h3>
-        <div className="space-y-1">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="category"
-              value="all"
-              checked={selectedCategory === 'all'}
-              onChange={(e) => onCategoryChange(e.target.value)}
-              className="text-blue-600"
-            />
-            <span className="text-sm text-blue-200">All Categories</span>
-          </label>
-          {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
-            <label key={value} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="category"
-                value={value}
-                checked={selectedCategory === value}
-                onChange={(e) => onCategoryChange(e.target.value)}
-                className="text-blue-600"
-              />
-              <span className="text-sm text-blue-200">{label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
       <div>
         <h3 className="text-sm font-semibold text-blue-200 mb-2">Date Range</h3>
         <div className="space-y-1">

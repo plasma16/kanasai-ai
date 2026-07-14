@@ -16,7 +16,6 @@ interface HeatMapProps {
   onMapClick?: (lat: number, lng: number) => void
   selectedLocation?: { lat: number; lng: number }
   filters?: {
-    category: string
     dateFrom: string
     dateTo: string
   }
@@ -81,9 +80,6 @@ export default function HeatMap({ onMapClick, selectedLocation, filters, hideExi
     try {
       // Build query string from filters
       const params = new URLSearchParams()
-      if (filters?.category && filters.category !== 'all') {
-        params.append('category', filters.category)
-      }
       if (filters?.dateFrom) {
         params.append('dateFrom', filters.dateFrom)
       }

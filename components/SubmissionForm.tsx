@@ -14,7 +14,6 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
     latitude: initialLocation?.lat || 0,
     longitude: initialLocation?.lng || 0,
     item_stolen: '',
-    category: 'others',
     description: '',
     occurred_at: new Date().toISOString().split('T')[0]
   })
@@ -86,22 +85,6 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
           placeholder="e.g., iPhone 15, Wallet, Laptop"
           className="w-full px-3 py-2 bg-blue-800 border border-blue-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-blue-400"
         />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-blue-200 mb-1">
-          Category *
-        </label>
-        <select
-          required
-          value={formData.category}
-          onChange={(e) => setFormData({ ...formData, category: e.target.value as TheftCategory })}
-          className="w-full px-3 py-2 bg-blue-800 border border-blue-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
-        </select>
       </div>
 
       <div>
