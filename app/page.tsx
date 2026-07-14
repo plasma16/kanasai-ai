@@ -71,50 +71,73 @@ export default function Home() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left Sidebar - Filters (only in view tab) */}
-          {activeTab === 'view' && (
-            <div className="w-full lg:w-1/3">
-              <div className="bg-blue-900 rounded-lg shadow-lg p-4 border border-blue-800">
-                <h2 className="text-lg font-semibold text-white mb-3">Filters</h2>
-                <FilterPanel
-                  selectedCategory={selectedCategory}
-                  dateRange={dateRange}
-                  onCategoryChange={setSelectedCategory}
-                  onDateRangeChange={setDateRange}
-                  onReset={handleResetFilters}
-                />
+          {/* Report Tab: Form + Map side by side */}
+          {activeTab === 'report' && (
+            <>
+              {/* Left: Submission Form */}
+              <div className="w-full lg:w-1/2">
+                <div className="bg-blue-900 rounded-lg shadow-lg p-6 border border-blue-800">
+                  <h2 className="text-2xl font-bold text-white mb-6">Report a Theft</h2>
+                  <div className="mb-6 p-4 bg-blue-800 rounded-lg">
+                    <p className="text-blue-200">
+                      💡 <strong>Tip:</strong> Click on the map to select the theft location, then fill out the form.
+                    </p>
+                  </div>
+                  <SubmissionForm 
+                    onSuccess={handleSubmissionSuccess}
+                    initialLocation={selectedLocation}
+                  />
+                </div>
               </div>
-            </div>
+
+              {/* Right: Map for location selection */}
+              <div className="w-full lg:w-1/2">
+                <div className="bg-blue-900 rounded-lg shadow-lg overflow-hidden border border-blue-800">
+                  <div className="p-4 bg-blue-800 border-b border-blue-700">
+                    <h3 className="text-lg font-semibold text-white">📍 Select Location</h3>
+                    <p className="text-sm text-blue-200 mt-1">Click on the map to pin the theft location</p>
+                  </div>
+                  <HeatMap 
+                    key={refreshKey}
+                    onMapClick={handleMapClick}
+                    selectedLocation={selectedLocation}
+                    filters={{ category: 'all', dateFrom: '', dateTo: '' }}
+                  />
+                </div>
+              </div>
+            </>
           )}
 
-          {/* Main Content Area */}
-          <div className={`w-full ${activeTab === 'view' ? 'lg:w-2/3' : 'lg:w-full'}`}>
-            {activeTab === 'report' ? (
-              /* Submission Form */
-              <div className="bg-blue-900 rounded-lg shadow-lg p-6 border border-blue-800">
-                <h2 className="text-2xl font-bold text-white mb-6">Report a Theft</h2>
-                <div className="mb-6 p-4 bg-blue-800 rounded-lg">
-                  <p className="text-blue-200">
-                    💡 <strong>Tip:</strong> You can click on the map in the "View Heat Map" tab to select a location, then come back here to submit.
-                  </p>
+          {/* View Tab: Filters + Heat Map */}
+          {activeTab === 'view' && (
+            <>
+              {/* Left: Filters */}
+              <div className="w-full lg:w-1/3">
+                <div className="bg-blue-900 rounded-lg shadow-lg p-4 border border-blue-800">
+                  <h2 className="text-lg font-semibold text-white mb-3">Filters</h2>
+                  <FilterPanel
+                    selectedCategory={selectedCategory}
+                    dateRange={dateRange}
+                    onCategoryChange={setSelectedCategory}
+                    onDateRangeChange={setDateRange}
+                    onReset={handleResetFilters}
+                  />
                 </div>
-                <SubmissionForm 
-                  onSuccess={handleSubmissionSuccess}
-                  initialLocation={selectedLocation}
-                />
               </div>
-            ) : (
-              /* Heat Map View */
-              <div className="bg-blue-900 rounded-lg shadow-lg overflow-hidden border border-blue-800">
-                <HeatMap 
-                  key={refreshKey}
-                  onMapClick={handleMapClick}
-                  selectedLocation={selectedLocation}
-                  filters={{ category: selectedCategory, dateFrom: dateRange.from, dateTo: dateRange.to }}
-                />
+
+              {/* Right: Heat Map */}
+              <div className="w-full lg:w-2/3">
+                <div className="bg-blue-900 rounded-lg shadow-lg overflow-hidden border border-blue-800">
+                  <HeatMap 
+                    key={refreshKey}
+                    onMapClick={handleMapClick}
+                    selectedLocation={selectedLocation}
+                    filters={{ category: selectedCategory, dateFrom: dateRange.from, dateTo: dateRange.to }}
+                  />
+                </div>
               </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </main>
     </div>
