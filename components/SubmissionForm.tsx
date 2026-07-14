@@ -58,15 +58,20 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
     }
   }
 
+  const hasLocation = formData.latitude !== 0 && formData.longitude !== 0
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {formData.latitude !== 0 && (
-        <div className="bg-green-50 p-3 rounded-md">
-          <p className="text-sm text-green-800">
-            📍 Location set: {formData.latitude.toFixed(4)}, {formData.longitude.toFixed(4)}
-          </p>
-        </div>
-      )}
+      {/* Location Status */}
+      <div className={`p-3 rounded-md ${hasLocation ? 'bg-green-50' : 'bg-yellow-50'}`}>
+        <p className={`text-sm ${hasLocation ? 'text-green-800' : 'text-yellow-800'}`}>
+          {hasLocation ? (
+            <>📍 Location set: {formData.latitude.toFixed(4)}, {formData.longitude.toFixed(4)}</>
+          ) : (
+            <>⚠️ Please click on the map to select theft location</>
+          )}
+        </p>
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -115,10 +120,10 @@ export default function SubmissionForm({ onSuccess, initialLocation }: Submissio
 
       <button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || !hasLocation}
         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
       >
-        {submitting ? 'Submitting...' : 'Submit Report'}
+        {submitting ? 'Submitting...' : !hasLocation ? 'Select Location First' : 'Submit Report'}
       </button>
     </form>
   )
