@@ -5,36 +5,26 @@ import { useState } from 'react'
 import SubmissionForm from '@/components/SubmissionForm'
 import Header from '@/components/Header'
 import FilterPanel from '@/components/FilterPanel'
-
-// Dynamically import Leaflet components to avoid SSR issues
-const HeatMap = dynamic(() => import('@/components/HeatMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center h-64 bg-blue-900 rounded-lg">
-      <p className="text-blue-200">Loading map...</p>
-    </div>
-  )
-})
+import HeatMap from '@/components/HeatMap'
 
 export default function Home() {
-  const [showForm, setShowForm] = useState(false)
+  const [activeTab, setActiveTab] = useState<'report' | 'view'>('report')
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | undefined>()
   const [refreshKey, setRefreshKey] = useState(0)
   
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [dateRange, setDateRange] = useState({ from: '', to: '' })
-  const [showFilters, setShowFilters] = useState(false)
 
   const handleMapClick = (lat: number, lng: number) => {
     setSelectedLocation({ lat, lng })
-    setShowForm(true)
+    setActiveTab('report')
   }
 
   const handleSubmissionSuccess = () => {
-    setShowForm(false)
     setSelectedLocation(undefined)
     setRefreshKey(prev => prev + 1)
+    setActiveTab('view') // Switch to view tab after submission
   }
 
   const handleResetFilters = () => {
@@ -44,48 +34,60 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-blue-950">
-      <Header onAddClick={() => setShowForm(true)} />
+      <Header />
       
       <main className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Mobile filter toggle */}
-        <div className="lg:hidden mb-4">
+        {/* Tab Navigation */}
+        <div className="flex gap-2 mb-6">
           <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="w-full bg-blue-900 text-blue-200 py-2 px-4 rounded-lg border border-blue-800"
+            onClick={() => setActiveTab('report')}
+            className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors ${
+              activeTab === 'report'
+                ? 'bg-blue-600 text-white'
+                : 'bg-blue-900 text-blue-200 hover:bg-blue-800'
+            }`}
           >
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
+            📝 Report Theft
+          </button>
+          <button
+            onClick={() => setActiveTab('view')}
+            className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors ${
+              activeTab === 'view'
+                ? 'bg-blue-600 text-white'
+                : 'bg-blue-900 text-blue-200 hover:bg-blue-800'
+            }`}
+          >
+            🗺️ View Heat Map
           </button>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar - Filters + Form */}
-          <div className={`w-full lg:w-1/3 ${(showFilters || !showForm) ? 'block' : 'hidden lg:block'}`}>
-            {/* Filters Panel */}
-            <div className="bg-blue-900 rounded-lg shadow-lg p-4 border border-blue-800 mb-4">
-              <h2 className="text-lg font-semibold text-white mb-3">Filters</h2>
-              <FilterPanel
-                selectedCategory={selectedCategory}
-                dateRange={dateRange}
-                onCategoryChange={setSelectedCategory}
-                onDateRangeChange={setDateRange}
-                onReset={handleResetFilters}
-              />
-            </div>
-
-            {/* Submission Form */}
-            {showForm ? (
+          {/* Left Sidebar - Filters (only in view tab) */}
+          {activeTab === 'view' && (
+            <div className="w-full lg:w-1/3">
               <div className="bg-blue-900 rounded-lg shadow-lg p-4 border border-blue-800">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-white">Report Theft</h2>
-                  <button 
-                    onClick={() => {
-                      setShowForm(false)
-                      setSelectedLocation(undefined)
-                    }}
-                    className="text-blue-300 hover:text-white"
-                  >
-                    ✕
-                  </button>
+                <h2 className="text-lg font-semibold text-white mb-3">Filters</h2>
+                <FilterPanel
+                  selectedCategory={selectedCategory}
+                  dateRange={dateRange}
+                  onCategoryChange={setSelectedCategory}
+                  onDateRangeChange={setDateRange}
+                  onReset={handleResetFilters}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Main Content Area */}
+          <div className={`w-full ${activeTab === 'view' ? 'lg:w-2/3' : 'lg:w-full'}`}>
+            {activeTab === 'report' ? (
+              /* Submission Form */
+              <div className="bg-blue-900 rounded-lg shadow-lg p-6 border border-blue-800">
+                <h2 className="text-2xl font-bold text-white mb-6">Report a Theft</h2>
+                <div className="mb-6 p-4 bg-blue-800 rounded-lg">
+                  <p className="text-blue-200">
+                    💡 <strong>Tip:</strong> You can click on the map in the "View Heat Map" tab to select a location, then come back here to submit.
+                  </p>
                 </div>
                 <SubmissionForm 
                   onSuccess={handleSubmissionSuccess}
@@ -93,42 +95,16 @@ export default function Home() {
                 />
               </div>
             ) : (
-              <div className="bg-blue-900 rounded-lg shadow-lg p-4 border border-blue-800">
-                <h2 className="text-xl font-semibold text-white mb-4">How to Use</h2>
-                <ol className="space-y-3 text-blue-200">
-                  <li className="flex gap-3">
-                    <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">1</span>
-                    <span>Click the map to pin a theft location</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">2</span>
-                    <span>Fill in what was stolen</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">3</span>
-                    <span>Submit to add to the heat map</span>
-                  </li>
-                </ol>
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-500 transition-colors shadow-lg"
-                >
-                  + Report a Theft
-                </button>
+              /* Heat Map View */
+              <div className="bg-blue-900 rounded-lg shadow-lg overflow-hidden border border-blue-800">
+                <HeatMap 
+                  key={refreshKey}
+                  onMapClick={handleMapClick}
+                  selectedLocation={selectedLocation}
+                  filters={{ category: selectedCategory, dateFrom: dateRange.from, dateTo: dateRange.to }}
+                />
               </div>
             )}
-          </div>
-
-          {/* Map Section */}
-          <div className="w-full lg:w-2/3">
-            <div className="bg-blue-900 rounded-lg shadow-lg overflow-hidden border border-blue-800">
-              <HeatMap 
-                key={refreshKey} 
-                onMapClick={handleMapClick}
-                selectedLocation={selectedLocation}
-                filters={{ category: selectedCategory, dateFrom: dateRange.from, dateTo: dateRange.to }}
-              />
-            </div>
           </div>
         </div>
       </main>
