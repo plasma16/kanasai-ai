@@ -3,11 +3,10 @@
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import SubmissionForm from '@/components/SubmissionForm'
-import HeatMap from '@/components/HeatMap'
 import Header from '@/components/Header'
 
 // Dynamically import Leaflet components to avoid SSR issues
-const MapComponent = dynamic(() => import('@/components/HeatMap'), {
+const HeatMap = dynamic(() => import('@/components/HeatMap'), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
@@ -18,10 +17,17 @@ const MapComponent = dynamic(() => import('@/components/HeatMap'), {
 
 export default function Home() {
   const [showForm, setShowForm] = useState(false)
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | undefined>()
   const [refreshKey, setRefreshKey] = useState(0)
+
+  const handleMapClick = (lat: number, lng: number) => {
+    setSelectedLocation({ lat, lng })
+    setShowForm(true)
+  }
 
   const handleSubmissionSuccess = () => {
     setShowForm(false)
+    setSelectedLocation(undefined)
     setRefreshKey(prev => prev + 1)
   }
 
@@ -35,7 +41,7 @@ export default function Home() {
           {/* Map Section - Full width on mobile, 2/3 on desktop */}
           <div className="w-full lg:w-2/3">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <MapComponent key={refreshKey} />
+              <HeatMap key={refreshKey} onMapClick={handleMapClick} />
             </div>
           </div>
 
@@ -46,13 +52,19 @@ export default function Home() {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-semibold">Report Theft</h2>
                   <button 
-                    onClick={() => setShowForm(false)}
+                    onClick={() => {
+                      setShowForm(false)
+                      setSelectedLocation(undefined)
+                    }}
                     className="text-gray-500 hover:text-gray-700"
                   >
                     ✕
                   </button>
                 </div>
-                <SubmissionForm onSuccess={handleSubmissionSuccess} />
+                <SubmissionForm 
+                  onSuccess={handleSubmissionSuccess}
+                  initialLocation={selectedLocation}
+                />
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow-md p-4">
