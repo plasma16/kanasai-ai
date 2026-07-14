@@ -1,7 +1,7 @@
 'use client'
 
 interface HeaderProps {
-  onAddClick: () => void
+  onAddClick?: () => void
 }
 
 export default function Header({ onAddClick }: HeaderProps) {
@@ -17,13 +17,15 @@ export default function Header({ onAddClick }: HeaderProps) {
               Data is crowdsourced from the community to create a real-time heat map.
             </p>
           </div>
-          <button
-            onClick={onAddClick}
-            className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-500 transition-colors flex items-center gap-2 shadow-lg"
-          >
-            <span className="text-xl">+</span>
-            <span className="hidden sm:inline">Report Theft</span>
-          </button>
+          {onAddClick && (
+            <button
+              onClick={onAddClick}
+              className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-500 transition-colors flex items-center gap-2 shadow-lg"
+            >
+              <span className="text-xl">+</span>
+              <span className="hidden sm:inline">Report Theft</span>
+            </button>
+          )}
         </div>
       </div>
     </header>
