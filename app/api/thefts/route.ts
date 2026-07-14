@@ -30,20 +30,15 @@ export async function GET(request: NextRequest) {
     // Transform the data to include proper coordinates
     const transformedData = data?.map(theft => {
       // Parse the PostGIS hex string to get coordinates
-      // The hex string is in EWKB format, we need to extract longitude and latitude
       let coordinates = [0, 0]
       
       if (theft.location && typeof theft.location === 'string') {
-        // If it's a hex string from PostGIS
         if (theft.location.startsWith('0101000020E6100000')) {
-          // This is a Point geometry in EWKB format
-          // Extract the coordinates from the hex string
           const hex = theft.location.replace('0101000020E6100000', '')
           if (hex.length >= 32) {
             const lonHex = hex.substring(0, 16)
             const latHex = hex.substring(16, 32)
             
-            // Convert hex to float64
             const lonBuffer = Buffer.from(lonHex, 'hex')
             const latBuffer = Buffer.from(latHex, 'hex')
             
@@ -74,7 +69,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Validate submission (now async because it checks IP geolocation)
+    // Validate submission (checks IP geolocation)
     const validation = await validateSubmission(body, request)
     if (!validation.valid) {
       return NextResponse.json(
@@ -83,19 +78,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check rate limit
-    const ip = getClientIP(request)
-    const rateLimit = checkRateLimit(ip)
-    if (!rateLimit.allowed) {
+    // Get user's IP address for moderation
+    const forwardedFor = request.headers.get('x-forwarded-for')
+    const realIp = request.headers.get('x-real-ip')
+    const ipAddress = forwardedFor?.split(',')[0]?.trim() || realIp || 'unknown'
+
+    const { latitude, longitude, item_stolen, description, occurred_at, occurred_time } = body
+
+    // Validate required fields
+    if (!latitude || !longitude || !item_stolen) {
       return NextResponse.json(
-        { error: `Rate limit exceeded. Try again in ${rateLimit.retryAfter} seconds.` },
-        { status: 429 }
+        { error: 'Missing required fields: latitude, longitude, item_stolen' },
+        { status: 400 }
       )
     }
 
-    const { latitude, longitude, item_stolen, description, occurred_at } = body
-
-    // Insert into Supabase
+    // Insert into Supabase with IP address
     const { data, error } = await supabase
       .from('petty_thefts')
       .insert({
@@ -103,22 +101,18 @@ export async function POST(request: NextRequest) {
         item_stolen,
         description: description || null,
         occurred_at: occurred_at || null,
-        occurred_time: body.occurred_time || null
+        occurred_time: occurred_time || null,
+        ip_address: ipAddress
       })
       .select()
       .single()
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
 
     return NextResponse.json({ data }, { status: 201 })
   } catch (err) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-}
-
-function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  const realIP = request.headers.get('x-real-ip')
-  
-  if (forwarded) return forwarded.split(',')[0].trim()
-  if (realIP) return realIP
-  return 'unknown'
 }
