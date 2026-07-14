@@ -41,7 +41,11 @@ export default function Home() {
           {/* Map Section - Full width on mobile, 2/3 on desktop */}
           <div className="w-full lg:w-2/3">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <HeatMap key={refreshKey} onMapClick={handleMapClick} />
+              <HeatMap 
+                key={refreshKey} 
+                onMapClick={handleMapClick}
+                selectedLocation={selectedLocation}
+              />
             </div>
           </div>
 

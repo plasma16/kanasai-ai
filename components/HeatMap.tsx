@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { MapContainer, TileLayer, useMap, CircleMarker } from 'react-leaflet'
+import { MapContainer, TileLayer, useMap, CircleMarker, Marker } from 'react-leaflet'
 import { HeatMapLayer } from './HeatMapLayer'
 import 'leaflet/dist/leaflet.css'
 import { supabase } from '@/lib/supabase'
@@ -14,6 +14,35 @@ const SINGAPORE_ZOOM = 12
 
 interface HeatMapProps {
   onMapClick?: (lat: number, lng: number) => void
+  selectedLocation?: { lat: number; lng: number }
+}
+
+// Custom pin icon for selected location
+const createPinIcon = () => {
+  return L.divIcon({
+    className: 'custom-pin',
+    html: `<div style="
+      background-color: #3b82f6;
+      width: 20px;
+      height: 20px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);      position: relative;
+    ">
+      <div style="
+        background-color: white;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      "></div>
+    </div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 20],
+    popupAnchor: [0, -20]
+  })
 }
 
 function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lng: number) => void }) {
@@ -35,7 +64,7 @@ function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lng: numbe
   return null
 }
 
-export default function HeatMap({ onMapClick }: HeatMapProps) {
+export default function HeatMap({ onMapClick, selectedLocation }: HeatMapProps) {
   const [thefts, setThefts] = useState<PettyTheft[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -84,6 +113,8 @@ export default function HeatMap({ onMapClick }: HeatMapProps) {
       />
       <MapClickHandler onMapClick={onMapClick} />
       <HeatMapLayer points={heatPoints} />
+      
+      {/* Existing theft markers */}
       {thefts.map((theft) => (
         <CircleMarker
           key={theft.id}
@@ -97,6 +128,14 @@ export default function HeatMap({ onMapClick }: HeatMapProps) {
           }}
         />
       ))}
+      
+      {/* Selected location pin */}
+      {selectedLocation && (
+        <Marker
+          position={[selectedLocation.lat, selectedLocation.lng]}
+          icon={createPinIcon()}
+        />
+      )}
     </MapContainer>
   )
 }
